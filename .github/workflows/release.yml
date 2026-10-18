@@ -1,10 +1,11 @@
 name: Release
 
 # A version tag like 1.0.0 makes a release, if what it tags is on master. Master only changes through pull requests,
-# so a release is always something that was reviewed.
+# so a release is always something that was reviewed. A tag like 1.1.0-beta.1 makes a pre-release for testing, from
+# any branch.
 on:
   push:
-    tags: ["[0-9]+.[0-9]+.[0-9]+"]
+    tags: ["[0-9]+.[0-9]+.[0-9]+", "[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"]
 
 permissions:
   contents: write
@@ -18,6 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check that the tag is on master
+        if: ${{ !contains(github.ref_name, '-beta.') }}
         shell: bash
         run: |
           git fetch origin master
@@ -60,3 +62,4 @@ jobs:
             release/Stellaris-Archipelago-${{ github.ref_name }}.zip
             stellaris.apworld
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-beta.') }}

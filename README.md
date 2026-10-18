@@ -112,7 +112,7 @@ its installer) and the zip of a [release](../../releases).
 - `python -m stellaris_ap.client --offline` is the client without a window and without a server, and
   `python tools/try_server.py <address> <slot>` plays a few checks against a server without the game.
 - A version tag like `1.0.0` on master makes a release: the zip with everything needed to play, and
-  the world.
+  the world. A tag like `1.1.0-beta.1` makes a pre-release of any branch, for testing.
 
 ## License
 
