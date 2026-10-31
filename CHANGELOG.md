@@ -49,6 +49,9 @@ From the first full test in the game.
   Without the game running it reported an empire and DLCs of that earlier game, and warned about them.
 - The search of the tracker does not light up a location whose item is hidden.
 - When the client is started a second time, the window of the first one closes.
+- The crisis goals only count while your empire is independent. A subject, of an awakened fallen
+  empire or anyone else, has to break free first; the client says so when that is all that is
+  missing.
 - A death from the multiworld that takes a leader or a fleet is no longer sent back out as a death of
   your own. The game reports that loss only after the mod is done with it, so it was taken for a new
   one. Deaths of your own in the three days after a received one are not sent either.

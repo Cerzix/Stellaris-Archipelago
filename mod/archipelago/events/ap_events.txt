@@ -74,7 +74,7 @@ country_event = {
 
 	trigger = {
 		has_country_flag = ap_player
-		NOT = { has_country_flag = ap_goal_crisis_fallen }
+		NOT = { has_country_flag = ap_goal_reported }
 	}
 
 	immediate = {

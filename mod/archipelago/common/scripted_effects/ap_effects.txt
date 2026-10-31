@@ -110,8 +110,9 @@ ap_count_crisis = {
 
 # Reports what has been achieved in the galaxy, for the goals that are about it. The client reads it from
 # the log as "AP_GOAL <number>", see GOALS there:
-# 1: an endgame crisis happened and was defeated (the game's own rule for it)
+# 1: an endgame crisis happened and was defeated
 # 2: the same, and no awakened fallen empire is around
+# Only while the player is no subject. A subject that would have reached one is reported as "AP_SUBJECT"
 # Scope: country
 ap_report_goals = {
 	if = {
@@ -122,19 +123,33 @@ ap_report_goals = {
 				check_variable = { which = ap_crisis_gone value >= 12 }
 			}
 		}
-		log = "AP_GOAL 1"
 		set_country_flag = ap_goal_crisis
-		# Once reached it stays reached, also for a client that was not running then: a fallen empire
-		# that awakens later does not take it back
+	}
+	# Once reached it stays reached, also for a client that was not running then: a fallen empire that
+	# awakens later does not take it back
+	if = {
+		limit = {
+			has_country_flag = ap_goal_crisis
+			NOT = { any_country = { is_country_type = awakened_fallen_empire } }
+		}
+		set_country_flag = ap_goal_crisis_fallen
+	}
+	# Only an empire of its own wins: not a subject, which an awakened fallen empire may have taken in
+	if = {
+		limit = { is_subject = no }
+		if = {
+			limit = { has_country_flag = ap_goal_crisis }
+			log = "AP_GOAL 1"
+		}
 		if = {
 			limit = { has_country_flag = ap_goal_crisis_fallen }
 			log = "AP_GOAL 2"
+			set_country_flag = ap_goal_reported
 		}
-		if = {
-			limit = { NOT = { any_country = { is_country_type = awakened_fallen_empire } } }
-			log = "AP_GOAL 2"
-			set_country_flag = ap_goal_crisis_fallen
-		}
+	}
+	else_if = {
+		limit = { has_country_flag = ap_goal_crisis }
+		log = "AP_SUBJECT"
 	}
 }
 

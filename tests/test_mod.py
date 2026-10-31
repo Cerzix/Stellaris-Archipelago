@@ -728,8 +728,8 @@ class ScriptTest(unittest.TestCase):
     def test_goals_about_the_galaxy_are_reported(self):
         effects = dict((key, value) for key, _, value in pdx.parse(strip_comments(mod_script("common/scripted_effects"))))
         self.assertEqual(GOALS, {1: "crisis", 2: "crisis_and_fallen_empires"})
-        report = pdx.get(effects["ap_report_goals"], "if")
-        self.assertEqual(pdx.get(report, "limit"), [("OR", "=", [
+        crisis, fallen, independent = [value for key, _, value in effects["ap_report_goals"] if key == "if"]
+        self.assertEqual(pdx.get(crisis, "limit"), [("OR", "=", [
             ("crisis_happened_and_defeated", "=", "yes"),
             ("check_variable", "=", [("which", "=", "ap_crisis_gone"), ("value", ">=", "12")])])])
         # The mod's own count: a crisis empire was seen and is gone, whatever the crisis' own events did
@@ -744,11 +744,18 @@ class ScriptTest(unittest.TestCase):
                        if key == "country_event" and pdx.get(value, "id") == "ap.6")
         immediate = pdx.get(monthly["country_event"], "immediate")
         self.assertEqual(immediate, [("ap_count_crisis", "=", "yes"), ("ap_report_goals", "=", "yes")])
-        self.assertEqual(pdx.get(report, "log"), '"AP_GOAL 1"')
-        fallen = pdx.get(report, "if")
-        self.assertEqual(pdx.get(fallen, "limit"), [("NOT", "=", [("any_country", "=", [
-            ("is_country_type", "=", "awakened_fallen_empire")])])])
-        self.assertEqual(pdx.get(fallen, "log"), '"AP_GOAL 2"')
+        self.assertEqual(pdx.get(crisis, "set_country_flag"), "ap_goal_crisis")
+        self.assertEqual(pdx.get(fallen, "limit"), [("has_country_flag", "=", "ap_goal_crisis"), ("NOT", "=", [
+            ("any_country", "=", [("is_country_type", "=", "awakened_fallen_empire")])])])
+        self.assertEqual(pdx.get(fallen, "set_country_flag"), "ap_goal_crisis_fallen")
+        # Reported only for an independent empire, and a subject is told why not
+        self.assertEqual(pdx.get(independent, "limit"), [("is_subject", "=", "no")])
+        logs = [(pdx.get(value, "limit"), pdx.get(value, "log")) for key, _, value in independent if key == "if"]
+        self.assertEqual(logs, [([("has_country_flag", "=", "ap_goal_crisis")], '"AP_GOAL 1"'),
+                                ([("has_country_flag", "=", "ap_goal_crisis_fallen")], '"AP_GOAL 2"')])
+        self.assertEqual(pdx.get(pdx.get(effects["ap_report_goals"], "else_if"), "log"), '"AP_SUBJECT"')
+        self.assertIn(("NOT", "=", [("has_country_flag", "=", "ap_goal_reported")]),
+                      pdx.get(monthly["country_event"], "trigger"), "until reported, as an independent empire")
         self.assertIn(("ap_report_goals", "=", "yes"), effects["ap_setup_player"], "also when a save is loaded")
         on_actions = dict((key, pdx.values(pdx.get(value, "events", [])))
                           for key, _, value in pdx.parse(mod_script("common/on_actions")))

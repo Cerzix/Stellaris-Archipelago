@@ -209,6 +209,8 @@ class ServerSession(Session):
         self.announced = 0
         self.won = False
         self.warned = False
+        # Whether the player was told that a subject does not win
+        self.told_subject = False
         self.connected = False
         # The hint points of the slot and what a hint costs, as the server tells them. None until it has
         self.hints: tuple[int, int] | None = None
@@ -236,6 +238,10 @@ class ServerSession(Session):
         self.compare_with_game()
         if self.bridge and self.bridge.goals:
             self.check_goal()
+        if (self.bridge and self.bridge.subject and not self.won and not self.told_subject
+                and self.slot_data.get("goal") in GOALS.values()):
+            self.told_subject = True
+            self.log("info", "The crisis is defeated, but your empire is a subject. Become independent to reach your goal.")
 
     # --- what the server reports
 
@@ -419,9 +425,9 @@ class ServerSession(Session):
         elif goal == "locations":
             state.goal = f"Goal: {len(state.checked)} of {self.slot_data.get('locations_required', 0)} locations"
         elif goal == "crisis":
-            state.goal = "Goal: defeat the endgame crisis"
+            state.goal = "Goal: defeat the endgame crisis, as an independent empire"
         elif goal == "crisis_and_fallen_empires":
-            state.goal = "Goal: defeat the endgame crisis, with no awakened fallen empire left"
+            state.goal = "Goal: defeat the endgame crisis, with no awakened fallen empire left, as an independent empire"
         if self.won:
             state.goal += " (reached)"
         return state

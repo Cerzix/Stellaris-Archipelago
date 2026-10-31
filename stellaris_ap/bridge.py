@@ -136,6 +136,8 @@ class Bridge:
         # has told which run it belongs to
         self.goals: set[str] = set()
         self.pending_goals: set[str] = set()
+        # Whether the save would have reached a goal about the galaxy, if the player were not a subject
+        self.subject = False
         self.death_effect = death_effect
         self.doom_capital = doom_capital
         self.pick = pick
@@ -225,6 +227,7 @@ class Bridge:
                 self.pending_picks = []
                 self.pending_goals = set()
                 self.goals = set()
+                self.subject = False
                 if self.mailbox:
                     self.mailbox.reset()
                 say("Stellaris: game loaded")
@@ -238,6 +241,8 @@ class Bridge:
                 else:
                     self.checked.add(number)
                     self.on_check(number)
+            elif word == "SUBJECT":
+                self.subject = True
             elif word == "GOAL" and number in GOALS:
                 if self.mailbox and getattr(self.mailbox, "run", 0):
                     self.pending_goals.add(GOALS[number])

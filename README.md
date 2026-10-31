@@ -52,6 +52,15 @@ its installer) and the zip of a [release](../../releases).
 6. If you lose, start a new game while connected to the same slot: it starts with everything the
    multiworld has given you so far.
 
+### Galaxy settings
+
+Stellaris' own settings decide most of how hard a game is, and the mod leaves them to you. With
+the defaults a run tends to be easy, so for a game that stays a challenge we suggest:
+
+- Difficulty Commodore or higher, with the difficulty scaling to the late game turned on.
+- Endgame crisis strength 2x to 5x.
+- Some Fallen Empires and Advanced AI Starts, so that the galaxy holds its own against you.
+
 `event ap.100` in the game's console opens a small Archipelago menu.
 
 ## How it works
@@ -87,7 +96,8 @@ its installer) and the zip of a [release](../../releases).
 
 - `goal`: collect Precursor Fragments (`fragment_count`, `fragments_required`), send a share of your
   locations (`locations_required`), defeat the endgame crisis, or defeat it with no awakened fallen
-  empire left.
+  empire left. The crisis goals only count while your empire is independent: a subject, of a fallen
+  empire or anyone else, has to break free first.
 - `owned_dlc`, `empire_type`: technologies and traditions the player cannot use stay out of the
   multiworld. The locations are the same for everyone.
 - `randomize_traditions`: turned off, the tradition trees are the ones of the game and have nothing

@@ -314,6 +314,14 @@ class ServerSessionTest(unittest.TestCase):
         self.log("AP_HELLO")
         self.session.tick()
         self.assertFalse(self.server.won)
+        # A subject is told why it has not won, once
+        self.log("AP_SUBJECT")
+        self.log("AP_SUBJECT")
+        self.session.tick()
+        self.session.tick()
+        self.assertFalse(self.server.won)
+        told = [text for kind, text in self.lines if "is a subject" in text]
+        self.assertEqual(len(told), 1)
         self.log("AP_GOAL 1")
         self.session.tick()
         self.assertTrue(self.server.won)

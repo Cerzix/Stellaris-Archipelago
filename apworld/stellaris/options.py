@@ -12,7 +12,9 @@ class Goal(Choice):
     fragments: collect Precursor Fragments, which are found all over the multiworld.
     locations: send a share of your own locations (technologies, traditions and ascension perks).
     crisis: an endgame crisis has appeared in your galaxy and was defeated, by you or by anyone else.
-    crisis_and_fallen_empires: the same, and no awakened fallen empire is left."""
+    crisis_and_fallen_empires: the same, and no awakened fallen empire is left.
+    Both only count while your empire is independent: a subject, of a fallen empire or anyone else, has to
+    break free first."""
     display_name = "Goal"
     option_fragments = 0
     option_locations = 1
