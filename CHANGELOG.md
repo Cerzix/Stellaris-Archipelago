@@ -49,6 +49,11 @@ From the first full test in the game.
   Without the game running it reported an empire and DLCs of that earlier game, and warned about them.
 - The search of the tracker does not light up a location whose item is hidden.
 - When the client is started a second time, the window of the first one closes.
+- A death from the multiworld that takes a leader or a fleet is no longer sent back out as a death of
+  your own. The game reports that loss only after the mod is done with it, so it was taken for a new
+  one. Deaths of your own in the three days after a received one are not sent either.
+- The crisis goals also count a crisis as defeated once its empires have been gone from the galaxy
+  for a year, not only when the crisis' own ending event says so.
 
 ## 1.0.0
 

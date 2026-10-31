@@ -79,6 +79,35 @@ ap_setup_player = {
 	ap_report_goals = yes
 }
 
+# Whether an endgame crisis was in the galaxy and is gone: ap_crisis_gone counts the months since one of
+# its empires was last seen, once one was. Called monthly. A year, so that a crisis that turns into its
+# next stage is not taken for defeated
+# Scope: country
+ap_count_crisis = {
+	if = {
+		limit = {
+			any_country = {
+				OR = {
+					is_country_type = swarm
+					is_country_type = extradimensional
+					is_country_type = extradimensional_2
+					is_country_type = extradimensional_3
+					is_country_type = ai_empire
+					is_country_type = synth_queen_storm
+					is_country_type = synth_queen
+					is_country_type = awakened_synth_queen
+				}
+			}
+		}
+		set_country_flag = ap_crisis_seen
+		set_variable = { which = ap_crisis_gone value = 0 }
+	}
+	else_if = {
+		limit = { has_country_flag = ap_crisis_seen }
+		change_variable = { which = ap_crisis_gone value = 1 }
+	}
+}
+
 # Reports what has been achieved in the galaxy, for the goals that are about it. The client reads it from
 # the log as "AP_GOAL <number>", see GOALS there:
 # 1: an endgame crisis happened and was defeated (the game's own rule for it)
@@ -86,7 +115,13 @@ ap_setup_player = {
 # Scope: country
 ap_report_goals = {
 	if = {
-		limit = { crisis_happened_and_defeated = yes }
+		limit = {
+			OR = {
+				crisis_happened_and_defeated = yes
+				# The mod's own count as well, see ap_count_crisis: the game's needs the ending event of the crisis
+				check_variable = { which = ap_crisis_gone value >= 12 }
+			}
+		}
 		log = "AP_GOAL 1"
 		set_country_flag = ap_goal_crisis
 		# Once reached it stays reached, also for a client that was not running then: a fallen empire
@@ -255,22 +290,21 @@ ap_poll_mailbox = {
 ap_death_leader = {
 	if = {
 		limit = { any_owned_leader = { is_ruler = no } }
-		# Not a death to send to the multiworld in turn, see the events ap.30 to ap.33
-		set_country_flag = ap_dooming
+		# Not a death to send to the multiworld in turn, see the events ap.30 to ap.33. For a few days: the game
+		# runs those events only after this effect is done
+		set_timed_country_flag = { flag = ap_dooming days = 3 }
 		random_owned_leader = {
 			limit = { is_ruler = no }
 			kill_leader = { show_notification = yes }
 		}
-		remove_country_flag = ap_dooming
 	}
 	else_if = {
 		limit = { any_owned_leader = { is_ruler = yes } }
-		set_country_flag = ap_dooming
+		set_timed_country_flag = { flag = ap_dooming days = 3 }
 		random_owned_leader = {
 			limit = { is_ruler = yes }
 			kill_leader = { show_notification = yes }
 		}
-		remove_country_flag = ap_dooming
 	}
 	else = {
 		set_variable = { which = ap_death_effect value = 3 }
@@ -282,12 +316,11 @@ ap_death_leader = {
 ap_death_fleet = {
 	if = {
 		limit = { any_owned_fleet = { is_ship_class = shipclass_military } }
-		set_country_flag = ap_dooming
+		set_timed_country_flag = { flag = ap_dooming days = 3 }
 		random_owned_fleet = {
 			limit = { is_ship_class = shipclass_military }
 			destroy_fleet = this
 		}
-		remove_country_flag = ap_dooming
 	}
 	else = {
 		set_variable = { which = ap_death_effect value = 3 }
@@ -342,7 +375,7 @@ ap_doom = {
 	if = {
 		limit = { any_owned_planet = { OR = { is_capital = no always = $CAPITAL$ } } }
 		# What dies of the doom is not sent to the multiworld as a death, see the events ap.30 to ap.33
-		set_country_flag = ap_dooming
+		set_timed_country_flag = { flag = ap_dooming days = 3 }
 		random_owned_planet = {
 			limit = { OR = { is_capital = no always = $CAPITAL$ } }
 			save_event_target_as = ap_doom_planet
@@ -364,7 +397,6 @@ ap_doom = {
 				add_deposit = d_city_ruins
 			}
 		}
-		remove_country_flag = ap_dooming
 		country_event = { id = ap.10 }
 	}
 	else = {

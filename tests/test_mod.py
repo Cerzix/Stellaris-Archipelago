@@ -549,8 +549,10 @@ class ScriptTest(unittest.TestCase):
         self.assertNotIn("fleet_size", repr(battle), "any military fleet counts")
         effects = strip_comments(mod_script("common/scripted_effects"))
         doom = effects[effects.index("ap_doom = {"):]
-        self.assertLess(doom.index("set_country_flag = ap_dooming"), doom.index("destroy_colony = yes"))
-        self.assertLess(doom.index("destroy_colony = yes"), doom.index("remove_country_flag = ap_dooming"))
+        # The game runs the death events after the effect, so the flag is still there for a few days
+        self.assertLess(doom.index("set_timed_country_flag = { flag = ap_dooming days = 3 }"),
+                        doom.index("destroy_colony = yes"))
+        self.assertNotIn("remove_country_flag = ap_dooming", effects)
         for event in ("ap.30", "ap.31", "ap.33"):
             self.assertIn("ap_dooming", repr(events[event]), event)
 
@@ -601,8 +603,10 @@ class ScriptTest(unittest.TestCase):
         for block in (first, second):
             # Not a death to send on in turn
             keys = [entry[0] for entry in block]
-            self.assertLess(keys.index("set_country_flag"), keys.index("random_owned_leader"))
-            self.assertLess(keys.index("random_owned_leader"), keys.index("remove_country_flag"))
+            self.assertLess(keys.index("set_timed_country_flag"), keys.index("random_owned_leader"))
+            self.assertNotIn("remove_country_flag", keys, "the game runs the death events afterwards")
+        fleet = pdx.get(effects["ap_death_fleet"], "if")
+        self.assertIn(("set_timed_country_flag", "=", [("flag", "=", "ap_dooming"), ("days", "=", "3")]), fleet)
 
     def test_a_received_tradition_is_added_right_away(self):
         effects = dict((key, value) for key, _, value in pdx.parse(strip_comments(mod_script("common/scripted_effects"))))
@@ -725,7 +729,21 @@ class ScriptTest(unittest.TestCase):
         effects = dict((key, value) for key, _, value in pdx.parse(strip_comments(mod_script("common/scripted_effects"))))
         self.assertEqual(GOALS, {1: "crisis", 2: "crisis_and_fallen_empires"})
         report = pdx.get(effects["ap_report_goals"], "if")
-        self.assertEqual(pdx.get(report, "limit"), [("crisis_happened_and_defeated", "=", "yes")])
+        self.assertEqual(pdx.get(report, "limit"), [("OR", "=", [
+            ("crisis_happened_and_defeated", "=", "yes"),
+            ("check_variable", "=", [("which", "=", "ap_crisis_gone"), ("value", ">=", "12")])])])
+        # The mod's own count: a crisis empire was seen and is gone, whatever the crisis' own events did
+        count = effects["ap_count_crisis"]
+        seen = pdx.get(count, "if")
+        types = {value for key, _, value in pdx.get(pdx.get(pdx.get(seen, "limit"), "any_country"), "OR")}
+        self.assertEqual(types, {"swarm", "extradimensional", "extradimensional_2", "extradimensional_3",
+                                 "ai_empire", "synth_queen_storm", "synth_queen", "awakened_synth_queen"})
+        self.assertIn(("set_variable", "=", [("which", "=", "ap_crisis_gone"), ("value", "=", "0")]), seen)
+        self.assertEqual(pdx.get(pdx.get(count, "else_if"), "limit"), [("has_country_flag", "=", "ap_crisis_seen")])
+        monthly = dict((key, value) for key, _, value in pdx.parse(strip_comments(mod_script("events")))
+                       if key == "country_event" and pdx.get(value, "id") == "ap.6")
+        immediate = pdx.get(monthly["country_event"], "immediate")
+        self.assertEqual(immediate, [("ap_count_crisis", "=", "yes"), ("ap_report_goals", "=", "yes")])
         self.assertEqual(pdx.get(report, "log"), '"AP_GOAL 1"')
         fallen = pdx.get(report, "if")
         self.assertEqual(pdx.get(fallen, "limit"), [("NOT", "=", [("any_country", "=", [

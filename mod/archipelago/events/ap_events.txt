@@ -78,6 +78,7 @@ country_event = {
 	}
 
 	immediate = {
+		ap_count_crisis = yes
 		ap_report_goals = yes
 	}
 }
