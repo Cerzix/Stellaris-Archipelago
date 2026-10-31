@@ -136,6 +136,29 @@ class DataTest(unittest.TestCase):
             usable = [item for item in data.items() if data.tables.usable(item, set(), empire)]
             self.assertGreater(len(usable), 400, empire)
 
+    def test_ships(self):
+        """Bio ships grow their own hulls and weapons, and build none of the normal ones."""
+        technologies = {technology["key"]: technology for technology in data.technologies()}
+        self.assertEqual(technologies["tech_destroyers"]["ships"], ["normal"])
+        self.assertEqual(technologies["tech_torpedoes_1"]["ships"], ["normal"])
+        self.assertEqual(technologies["tech_weavers"]["ships"], ["bio"])
+        self.assertEqual(technologies["tech_weaver_growth_2"]["ships"], ["bio"], "after a bio ship technology")
+        self.assertEqual(technologies["tech_lasers_1"]["ships"], list(data.tables.SHIPS))
+        self.assertEqual(technologies["tech_swarm_strike_craft_1"]["ships"], list(data.tables.SHIPS))
+        self.assertTrue(all(technology["ships"] for technology in data.technologies()))
+        items = {item["name"]: item for item in data.items()}
+        dlcs = set(data.dlcs())
+        weavers, destroyers = items[technologies["tech_harbingers"]["name"]], items[technologies["tech_destroyers"]["name"]]
+        self.assertFalse(data.tables.usable(weavers, dlcs, "machine"), "normal ships unless said otherwise")
+        self.assertTrue(data.tables.usable(weavers, dlcs, "machine", "bio"))
+        self.assertFalse(data.tables.usable(destroyers, dlcs, "regular", "bio"))
+        for ships in data.tables.SHIPS:
+            usable = [item for item in data.items() if data.tables.usable(item, dlcs, "regular", ships)]
+            self.assertGreater(len(usable), 400, ships)
+        self.assertTrue(all(item["ships"] for item in data.items()))
+        report = build_mod.render_effects(data.locations(), data.items())
+        self.assertIn('if = { limit = { uses_ship_category = bio_ship } log = "AP_SHIPS 2" }', report)
+
     def test_the_mod_reports_dlcs_and_empire(self):
         effects = mod_script("common/scripted_effects")
         for number, dlc in enumerate(data.dlcs(), 1):

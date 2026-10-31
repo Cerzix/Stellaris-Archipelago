@@ -21,6 +21,10 @@ From the first full test in the game.
 ### Added
 
 - The option `randomize_traditions`. Turned off, the tradition trees are the ones of the game.
+- The option `ship_type`: `normal`, or `bio` for the bio ships of a BioGenesis ship set. The 56
+  technologies of bio ships (Maulers, Weavers, Harbingers, Stingers and their weapons) only go to an
+  empire with bio ships, and the 25 of the hulls and weapons they replace (corvettes to battleships,
+  missiles, torpedoes) only to one without. The client warns when the game has the other kind.
 - The tracker shows how far the goal is on a line of its own, counts the locations to two decimals,
   and has a Refresh button that reads everything again.
 - The tracker names a location after what it holds as soon as it can be researched or picked, as the

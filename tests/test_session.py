@@ -414,16 +414,18 @@ class ServerSessionTest(unittest.TestCase):
         self.assertIn(("error", "The server refused: there is no slot with that name"), self.lines)
 
     def test_warns_about_another_empire_and_missing_dlc(self):
-        self.connected(empire_type="machine", owned_dlc=[data.dlcs()[0], data.dlcs()[1]])
+        self.connected(empire_type="machine", ship_type="normal", owned_dlc=[data.dlcs()[0], data.dlcs()[1]])
         self.log("AP_HELLO")
         self.log("AP_DLC 2")
+        self.log("AP_SHIPS 2")
         self.log("AP_EMPIRE 1")
         self.session.tick()
         errors = [text for kind, text in self.lines if kind == "error"]
-        self.assertEqual(len(errors), 2)
+        self.assertEqual(len(errors), 3)
         self.assertIn("made for a machine empire, but you play a regular one", errors[0])
-        self.assertIn(data.dlcs()[0], errors[1])
-        self.assertNotIn(data.dlcs()[1], errors[1])
+        self.assertIn("made for an empire with normal ships, but yours has bio ships", errors[1])
+        self.assertIn(data.dlcs()[0], errors[2])
+        self.assertNotIn(data.dlcs()[1], errors[2])
 
 
 class BootstrapTest(unittest.TestCase):

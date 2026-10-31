@@ -435,6 +435,9 @@ def render_effects(locations: list[dict], items: list[dict], perk_keys=()) -> st
             f"\n# Reports the DLCs of the game and the kind of empire of the player, which the client compares\n"
             f"# with the options the multiworld was made with\n# Scope: country\n"
             f"ap_report_setup = {{\n{dlcs}"
+            # Before the empire, which the client compares everything with as soon as it is reported
+            f"\tif = {{ limit = {{ uses_ship_category = bio_ship }} log = \"AP_SHIPS 2\" }}\n"
+            f"\telse = {{ log = \"AP_SHIPS 1\" }}\n"
             f"\tif = {{ limit = {{ has_authority = auth_hive_mind }} log = \"AP_EMPIRE 2\" }}\n"
             f"\telse_if = {{ limit = {{ has_authority = auth_machine_intelligence }} log = \"AP_EMPIRE 3\" }}\n"
             f"\telse = {{ log = \"AP_EMPIRE 1\" }}\n}}\n"

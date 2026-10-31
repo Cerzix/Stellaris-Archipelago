@@ -12,7 +12,8 @@ Every technology has a kind:
 - "item": everything else. These are Archipelago items, and each gives one location to research.
 
 Technologies and tradition trees also get the DLCs they need ("dlc") and the kinds of empire that can
-use them ("empires"), see requirements.py. A technology needs what the technologies before it need.
+use them ("empires"), and technologies the ships they work with ("ships"), see requirements.py. A
+technology needs what the technologies before it need.
 """
 import argparse
 import json
@@ -119,6 +120,7 @@ def read_technologies(game_dir) -> list[dict]:
                 "icon": (pdx.get(value, "icon") or key).strip('"'),
                 "dlc": requirements.dlcs(pdx.get(value, "potential", [])),
                 "empires": requirements.empires(pdx.get(value, "potential", [])),
+                "ships": requirements.ships(pdx.get(value, "potential", [])),
             })
             prerequisites[key] = pdx.values(pdx.get(value, "prerequisites", []))
     technologies.sort(key=lambda technology: technology["key"])
@@ -127,7 +129,8 @@ def read_technologies(game_dir) -> list[dict]:
     for technology in technologies:
         technology["prerequisites"] = [key for key in prerequisites[technology["key"]] if key in known]
 
-    # A technology that follows one of a DLC, or one closed to a kind of empire, is no use without it either
+    # A technology that follows one of a DLC, or one closed to a kind of empire or of ships, is no use without
+    # it either
     by_key = {technology["key"]: technology for technology in technologies}
     changed = True
     while changed:
@@ -139,8 +142,9 @@ def read_technologies(game_dir) -> list[dict]:
                     continue
                 dlc = sorted(set(technology["dlc"]) | set(before["dlc"]))
                 empires = [empire for empire in technology["empires"] if empire in before["empires"]]
-                if dlc != technology["dlc"] or empires != technology["empires"]:
-                    technology["dlc"], technology["empires"] = dlc, empires
+                ships = [kind for kind in technology["ships"] if kind in before["ships"]]
+                if (dlc, empires, ships) != (technology["dlc"], technology["empires"], technology["ships"]):
+                    technology["dlc"], technology["empires"], technology["ships"] = dlc, empires, ships
                     changed = True
 
     # Archipelago needs unique names

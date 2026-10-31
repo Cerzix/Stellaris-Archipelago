@@ -98,8 +98,9 @@ the defaults a run tends to be easy, so for a game that stays a challenge we sug
   locations (`locations_required`), defeat the endgame crisis, or defeat it with no awakened fallen
   empire left. The crisis goals only count while your empire is independent: a subject, of a fallen
   empire or anyone else, has to break free first.
-- `owned_dlc`, `empire_type`: technologies and traditions the player cannot use stay out of the
-  multiworld. The locations are the same for everyone.
+- `owned_dlc`, `empire_type`, `ship_type`: technologies and traditions the player cannot use stay out
+  of the multiworld. `ship_type` is `bio` for the bio ships of a BioGenesis ship set. The locations are
+  the same for everyone.
 - `randomize_traditions`: turned off, the tradition trees are the ones of the game and have nothing
   to do with the multiworld.
 - `early_progression`: the late game (technologies of tier 4 and 5, tradition trees 5 to 7,

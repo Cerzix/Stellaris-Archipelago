@@ -29,6 +29,8 @@ OFFLINE_SLOT = 1
 
 # The least time between two deaths sent to the multiworld. A lost war is one death, not twenty
 DEATH_COOLDOWN_SECONDS = 60
+# The ship types of the option ship_type, for messages
+SHIP_TEXT = {"normal": "normal ships", "bio": "bio ships"}
 DEATH_TEXT = {1: "{who} ruler {name} has died.", 2: "{who} leader {name} has died.",
               3: "{who} fleet {name} lost a battle.", 4: "{who} colony {name} was invaded.",
               5: "{who} colony {name} was destroyed."}
@@ -266,8 +268,8 @@ class ServerSession(Session):
         pool = self.slot_data.get("tradition_items")
         if pool is None:
             dlcs, empire = self.slot_data.get("owned_dlc", []), self.slot_data.get("empire_type", "regular")
-            pool = [item["id"] for item in data.items()
-                    if item["kind"] == "tradition" and data.tables.usable(item, dlcs, empire)]
+            pool = [item["id"] for item in data.items() if item["kind"] == "tradition"
+                    and data.tables.usable(item, dlcs, empire, self.slot_data.get("ship_type", "normal"))]
         self.tradition_pool = frozenset(pool)
         if not self.shuffled_traditions:
             self.locations = {location["id"]: location["name"] for location in data.locations()
@@ -404,6 +406,10 @@ class ServerSession(Session):
         if empire and empire != self.bridge.game_empire:
             self.log("error", f"The multiworld was made for a {empire} empire, but you play a "
                               f"{self.bridge.game_empire} one. Some of your items will do nothing.")
+        ships = self.slot_data.get("ship_type")
+        if ships and self.bridge.game_ships and ships != self.bridge.game_ships:
+            self.log("error", f"The multiworld was made for an empire with {SHIP_TEXT[ships]}, but yours has "
+                              f"{SHIP_TEXT[self.bridge.game_ships]}. Some of your items will do nothing.")
         active = {dlc for number, dlc in enumerate(data.dlcs(), 1) if number in self.bridge.game_dlcs}
         missing = sorted(set(self.slot_data.get("owned_dlc", [])) - active)
         if missing:

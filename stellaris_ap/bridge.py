@@ -147,6 +147,8 @@ class Bridge:
         # What the running game reported: the numbers of its DLCs (see data.dlcs) and the kind of empire
         self.game_dlcs: set[int] = set()
         self.game_empire: str | None = None
+        # "normal" or "bio", see SHIPS in tables.py
+        self.game_ships: str | None = None
         # What is in the log when the client starts happened before, its commands are not carried out again
         self.backlog = True
         self.deaths_per_doom = deaths_per_doom
@@ -221,6 +223,7 @@ class Bridge:
                 self.in_game = True
                 self.game_dlcs = set()
                 self.game_empire = None
+                self.game_ships = None
                 self.acked = 0
                 self.attempts = 0
                 self.pending_checks = []
@@ -258,6 +261,8 @@ class Bridge:
                 self.on_start(number)
             elif word == "DLC" and number is not None:
                 self.game_dlcs.add(number)
+            elif word == "SHIPS" and number in (1, 2):
+                self.game_ships = ("normal", "bio")[number - 1]
             elif word == "EMPIRE" and number in (1, 2, 3):
                 self.game_empire = EMPIRES[number - 1]
                 say(f"Stellaris: {self.game_empire} empire, {len(self.game_dlcs)} of the DLCs that matter")

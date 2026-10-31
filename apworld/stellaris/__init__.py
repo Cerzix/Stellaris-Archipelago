@@ -83,7 +83,8 @@ class StellarisWorld(World):
         room = len(self.locations())
         dlcs = self.options.owned_dlc.value
         empire = self.options.empire_type.current_key
-        usable = [item for item in content.ITEMS if tables.usable(item, dlcs, empire)]
+        ships = self.options.ship_type.current_key
+        usable = [item for item in content.ITEMS if tables.usable(item, dlcs, empire, ships)]
 
         # What has to be there comes first: the slots, the goal, every tradition (the trees of the game are
         # gone, so one that is left out can not be had at all) and every technology that is researched
@@ -140,6 +141,7 @@ class StellarisWorld(World):
             "locations_required": self.locations_required,
             "owned_dlc": sorted(self.options.owned_dlc.value),
             "empire_type": self.options.empire_type.current_key,
+            "ship_type": self.options.ship_type.current_key,
             "randomize_traditions": bool(self.options.randomize_traditions),
             "tradition_items": self.tradition_items,
             "death_link": bool(self.options.death_link),

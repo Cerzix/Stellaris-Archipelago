@@ -29,6 +29,8 @@ FRAGMENT = "Precursor Fragment"
 # Something good or bad happens when it arrives
 RANDOM_EVENT = "Random Event"
 EMPIRES = ("regular", "hive", "machine")
+# The ships of the player: the normal ones, or the bio ships of a BioGenesis ship set
+SHIPS = ("normal", "bio")
 
 
 def normal_trees(trees: list[dict]) -> list[dict]:
@@ -41,15 +43,17 @@ def tradition_location(slot: int, position: int) -> int:
 
 
 def build_items(technologies: list[dict], trees: list[dict], other: list[dict]) -> list[dict]:
-    """{"id", "name", "kind", "effect", "count", "dlc", "empires", "tier"} for every item.
+    """{"id", "name", "kind", "effect", "count", "dlc", "empires", "ships", "tier"} for every item.
 
     effect: the script that grants the item, in the scope of the player's country.
     count: how many of the item a game has. 0 for an item only some goals use.
     dlc, empires: the DLCs the item needs, and the kinds of empire that can use it.
+    ships: the ships it works with, see SHIPS.
     """
     items = [{"id": technology["id"], "name": technology["name"], "kind": "technology", "count": 1,
               "effect": f"give_technology = {{ tech = {technology['key']} message = yes }}",
-              "dlc": technology["dlc"], "empires": technology["empires"], "tier": technology["tier"],
+              "dlc": technology["dlc"], "empires": technology["empires"],
+              "ships": technology.get("ships", list(SHIPS)), "tier": technology["tier"],
               "weight": technology["weight"], "icon": technology["icon"]}
              for technology in technologies if technology["kind"] == "item"]
     for tree in normal_trees(trees):
@@ -57,10 +61,11 @@ def build_items(technologies: list[dict], trees: list[dict], other: list[dict]) 
             if "id" in tradition:
                 items.append({"id": tradition["id"], "name": tradition["name"], "kind": "tradition", "count": 1,
                               "effect": f"ap_add_tradition = {{ KEY = {tradition['key']} }}",
-                              "dlc": tree["dlc"], "empires": tree["empires"], "tier": None, "weight": 1})
+                              "dlc": tree["dlc"], "empires": tree["empires"], "ships": list(SHIPS),
+                              "tier": None, "weight": 1})
     for item in other:
-        items.append({"kind": "other", "count": 1, "dlc": [], "empires": list(EMPIRES), "tier": None, "weight": 1,
-                      **item})
+        items.append({"kind": "other", "count": 1, "dlc": [], "empires": list(EMPIRES), "ships": list(SHIPS),
+                      "tier": None, "weight": 1, **item})
     return items
 
 
@@ -85,6 +90,6 @@ def all_dlcs(technologies: list[dict], trees: list[dict]) -> list[str]:
     return sorted({dlc for entry in technologies + trees for dlc in entry["dlc"]})
 
 
-def usable(item: dict, dlcs, empire: str) -> bool:
-    """Whether an item does anything for a player with these DLCs and this kind of empire."""
-    return empire in item["empires"] and all(dlc in dlcs for dlc in item["dlc"])
+def usable(item: dict, dlcs, empire: str, ships: str = "normal") -> bool:
+    """Whether an item does anything for a player with these DLCs, this kind of empire and these ships."""
+    return empire in item["empires"] and ships in item["ships"] and all(dlc in dlcs for dlc in item["dlc"])

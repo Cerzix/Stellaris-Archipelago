@@ -615,6 +615,8 @@ ap_report_setup = {
 	if = { limit = { host_has_dlc = "Overlord" } log = "AP_DLC 15" }
 	if = { limit = { host_has_dlc = "Shadows of the Shroud" } log = "AP_DLC 16" }
 	if = { limit = { host_has_dlc = "The Machine Age" } log = "AP_DLC 17" }
+	if = { limit = { uses_ship_category = bio_ship } log = "AP_SHIPS 2" }
+	else = { log = "AP_SHIPS 1" }
 	if = { limit = { has_authority = auth_hive_mind } log = "AP_EMPIRE 2" }
 	else_if = { limit = { has_authority = auth_machine_intelligence } log = "AP_EMPIRE 3" }
 	else = { log = "AP_EMPIRE 1" }

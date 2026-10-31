@@ -64,6 +64,16 @@ class EmpireType(Choice):
     default = 0
 
 
+class ShipType(Choice):
+    """The ships of your empire, which come with the ship set you pick for it. bio: one of the biological ship
+    sets of BioGenesis, which grow Maulers, Weavers, Harbingers and Stingers instead of building corvettes to
+    battleships. Technologies for the other kind stay out of the multiworld."""
+    display_name = "Ship Type"
+    option_normal = 0
+    option_bio = 1
+    default = 0
+
+
 class RandomizeTraditions(DefaultOnToggle):
     """Whether the traditions are shuffled into the multiworld. If they are, every tradition you adopt is a
     location, and the real traditions arrive as items and work whichever trees you have adopted.
@@ -156,7 +166,7 @@ class DoomCapital(Toggle):
 # The headings the options are sorted under, in the Options Creator and on the website
 OPTION_GROUPS = [
     OptionGroup("Goal", [Goal, FragmentCount, FragmentsRequired, LocationsRequired]),
-    OptionGroup("Your Game", [OwnedDLC, EmpireType]),
+    OptionGroup("Your Game", [OwnedDLC, EmpireType, ShipType]),
     OptionGroup("Randomizer", [RandomizeTraditions, EarlyProgression, RandomEvents]),
     OptionGroup("DeathLink", [DeathLink, DeathOnRuler, DeathOnLeader, DeathOnColony, DeathOnBattle, DeathEffect]),
     OptionGroup("Doom", [DeathsPerDoom, Doom, DoomCapital]),
@@ -171,6 +181,7 @@ class StellarisOptions(PerGameCommonOptions):
     locations_required: LocationsRequired
     owned_dlc: OwnedDLC
     empire_type: EmpireType
+    ship_type: ShipType
     randomize_traditions: RandomizeTraditions
     early_progression: EarlyProgression
     death_link: DeathLink
