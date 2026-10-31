@@ -170,6 +170,24 @@ def required_traditions(block) -> list[str]:
     return found
 
 
+def swaps(definition: list, empires: list[str], requirements: Requirements, names: dict[str, str]) -> dict:
+    """{kind of empire: {"key", "name"}}: what the game makes of a tradition for an empire of that kind. Many
+    have a version of their own for hive minds and machine intelligences, with other names and effects,
+    which the game puts in place of the tradition by itself. For an ordinary empire of that kind: not the
+    versions for an origin or a civic, such as the ones of nomads."""
+    found = {}
+    for key, _, swap in definition:
+        if key != "tradition_swap" or not isinstance(swap, list) or not pdx.get(swap, "name"):
+            continue
+        name = pdx.get(swap, "name").strip('"')
+        if name not in names:
+            continue
+        for empire in empires:
+            if empire not in found and requirements.holds(pdx.get(swap, "trigger", []), empire, plain=True):
+                found[empire] = {"key": name, "name": display_name(name, names)}
+    return found
+
+
 def read_traditions(game_dir) -> list[dict]:
     """The tradition trees. Each lists its traditions in order: the adoption bonus, the traditions, the finish bonus.
 
@@ -191,6 +209,7 @@ def read_traditions(game_dir) -> list[dict]:
             adopt = pdx.get(value, "adoption_bonus").strip('"')
             finish = pdx.get(value, "finish_bonus").strip('"')
             keys = [adopt] + pdx.values(pdx.get(value, "traditions")) + [finish]
+            empires = requirements.empires(pdx.get(value, "potential", []))
             traditions = []
             for tradition in keys:
                 definition = definitions[tradition]
@@ -200,11 +219,12 @@ def read_traditions(game_dir) -> list[dict]:
                     "role": "adopt" if tradition == adopt else "finish" if tradition == finish else "tradition",
                     "requires": [required for required in required_traditions(pdx.get(definition, "possible", []))
                                  if required in keys],
+                    "swaps": swaps(definition, empires, requirements, names),
                 })
             trees.append({"key": key, "name": display_name(key, names), "file": path.name,
                           "kind": "ascension" if path.match(ASCENSION_TREE_FILES) else "normal",
                           "dlc": requirements.dlcs(pdx.get(value, "potential", [])),
-                          "empires": requirements.empires(pdx.get(value, "potential", [])),
+                          "empires": empires,
                           "template": pdx.get(value, "tree_template").strip('"'), "traditions": traditions})
     trees.sort(key=lambda tree: tree["key"])
     items = [tradition for tree in trees if tree["kind"] == "normal"

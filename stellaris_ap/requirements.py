@@ -45,22 +45,32 @@ class Requirements:
     def __init__(self, game_dir):
         self.triggers = scripted_triggers(game_dir)
 
-    def holds(self, block: list, empire: str | None, depth: int = 0, ships: str | None = None) -> bool | None:
+    def holds(self, block: list, empire: str | None, depth: int = 0, ships: str | None = None,
+              plain: bool = False) -> bool | None:
         """Whether the trigger is true for a kind of empire, and one with these ships. None for either is not
-        knowing it."""
-        return all_of([self.entry_holds(entry, empire, depth, ships) for entry in block])
+        knowing it. plain: for an ordinary empire of that kind, without a special origin, civic or anything
+        else the trigger may ask about: what is not known is false."""
+        return all_of([self.entry_holds(entry, empire, depth, ships, plain) for entry in block])
 
-    def entry_holds(self, entry, empire: str | None, depth: int, ships: str | None = None) -> bool | None:
+    def entry_holds(self, entry, empire: str | None, depth: int, ships: str | None = None,
+                    plain: bool = False) -> bool | None:
+        result = self.known(entry, empire, depth, ships, plain)
+        if result is None and plain:
+            # An ordinary empire is none of the things a trigger asks about: "is_nomadic = no" holds for it
+            return entry[2] == "no"
+        return result
+
+    def known(self, entry, empire: str | None, depth: int, ships: str | None, plain: bool) -> bool | None:
         key, _, value = entry
         if isinstance(value, list):
             if key in ("AND", "hidden_trigger"):
-                return self.holds(value, empire, depth, ships)
+                return self.holds(value, empire, depth, ships, plain)
             if key == "OR":
-                return any_of([self.entry_holds(inner, empire, depth, ships) for inner in value])
+                return any_of([self.entry_holds(inner, empire, depth, ships, plain) for inner in value])
             if key in ("NOT", "NOR"):
-                return negate(any_of([self.entry_holds(inner, empire, depth, ships) for inner in value]))
+                return negate(any_of([self.entry_holds(inner, empire, depth, ships, plain) for inner in value]))
             if key == "NAND":
-                return negate(self.holds(value, empire, depth, ships))
+                return negate(self.holds(value, empire, depth, ships, plain))
             return None
         value = value.strip('"') if value else value
         if key == "has_authority" and empire is not None:
@@ -73,7 +83,7 @@ class Requirements:
         if key == "uses_ship_category" and ships is not None:
             return (value == "bio_ship") == (ships == "bio")
         if key in self.triggers and value in ("yes", "no") and depth < MAX_DEPTH:
-            result = self.holds(self.triggers[key], empire, depth + 1, ships)
+            result = self.holds(self.triggers[key], empire, depth + 1, ships, plain)
             return result if value == "yes" else negate(result)
         return None
 

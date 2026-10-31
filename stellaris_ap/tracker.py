@@ -132,10 +132,13 @@ class TrackerState:
     # The ids of the traditions that are items of the multiworld, None if that is not known. The others are
     # not listed: the empire can not use them, so they are nowhere to be found
     pool: frozenset | None = None
+    # The kind of empire, whose own versions of traditions are the ones shown. None if it is not known
+    empire: str | None = None
 
     def same(self, other: "TrackerState") -> bool:
-        return (self.checked, self.holds, self.received, self.perk_slots, self.goal, self.traditions, self.pool) == (
-            other.checked, other.holds, other.received, other.perk_slots, other.goal, other.traditions, other.pool)
+        return (self.checked, self.holds, self.received, self.perk_slots, self.goal, self.traditions, self.pool,
+                self.empire) == (other.checked, other.holds, other.received, other.perk_slots, other.goal,
+                                 other.traditions, other.pool, other.empire)
 
     def without_spoilers(self, shown=()) -> "TrackerState":
         """The same run, knowing only what the locations that are checked held, and what the ones in shown
@@ -175,11 +178,12 @@ def columns(technologies: list[dict]) -> dict[str, int]:
 
 
 def build_tree(technologies: list[dict], locations: list[dict], collapsed=(), trees=(), pool=None,
-               only: str | None = None) -> Tree:
+               only: str | None = None, empire: str | None = None) -> Tree:
     """Lays out the tree. collapsed: the keys of the bands that only show their title.
     locations: the locations of the run. trees: the tradition trees whose traditions arrive as items.
     pool: the ids of the traditions that are in the multiworld, None for all of them.
-    only: the key of the one band to lay out. The others are still in the tree, but hidden."""
+    only: the key of the one band to lay out. The others are still in the tree, but hidden.
+    empire: the kind of empire, whose own versions of the traditions are named."""
     nodes: dict[str, Node] = {}
     bands = []
     y = MARGIN
@@ -222,7 +226,8 @@ def build_tree(technologies: list[dict], locations: list[dict], collapsed=(), tr
                      if "id" in tradition and (pool is None or tradition["id"] in pool)]
             for index, tradition in enumerate(items):
                 key = f"tradition_{tradition['id']}"
-                nodes[key] = Node(key, tradition["name"], "tradition", TRADITIONS, MARGIN + index * COLUMN, y,
+                nodes[key] = Node(key, data.tables.name_for(tradition, empire), "tradition", TRADITIONS,
+                                  MARGIN + index * COLUMN, y,
                                   hidden=band.collapsed, item=tradition["id"], group=tree["name"])
                 band.nodes.append(key)
             if items and not band.collapsed:
@@ -799,7 +804,7 @@ class TrackerWindow:
         tab = self.shown_tab()
         self.tree = build_tree(self.technologies, self.locations, self.settings.collapsed,
                                data.normal_trees() if shuffled else (), self.state.pool,
-                               None if tab == EVERYTHING else tab)
+                               None if tab == EVERYTHING else tab, self.state.empire)
         self.names = {key: node.label for key, node in self.tree.nodes.items()}
 
     def rebuild(self) -> None:
@@ -951,7 +956,8 @@ class TrackerWindow:
                 state = state.without_spoilers(open_locations(self.tree, self.technologies, state))
             if not state.same(self.state) or state.hidden != self.state.hidden:
                 hidden = state.hidden
-                relaid = (state.traditions, state.pool) != (self.state.traditions, self.state.pool)
+                relaid = ((state.traditions, state.pool, state.empire)
+                          != (self.state.traditions, self.state.pool, self.state.empire))
                 self.state = state.copy()
                 self.state.hidden = hidden
                 self.counts = researched(self.technologies, self.state)

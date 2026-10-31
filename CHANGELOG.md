@@ -53,6 +53,10 @@ From the first full test in the game.
   Without the game running it reported an empire and DLCs of that earlier game, and warned about them.
 - The search of the tracker does not light up a location whose item is hidden.
 - When the client is started a second time, the window of the first one closes.
+- A received tradition that hive minds or machine intelligences have a version of their own of is
+  named after that version, as the game hands it out: "Automated Colonization Units" for a machine
+  empire instead of "Colonization Fever". In the message in game, the client's log (with the item's
+  name in brackets) and the tracker. It always was that version in the game, only the name was not.
 - The crisis goals only count while your empire is independent. A subject, of an awakened fallen
   empire or anyone else, has to break free first; the client says so when that is all that is
   missing.

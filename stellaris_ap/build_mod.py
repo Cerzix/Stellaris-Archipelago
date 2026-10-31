@@ -454,8 +454,17 @@ def render_scripted_loc(items: list[dict]) -> str:
         return "".join(f"\ttext = {{ trigger = {{ check_variable = {{ which = {variable} value = {number} }} }} "
                        f"localization_key = {key}_{number} }}\n" for number in numbers)
 
+    # A tradition that a hive mind or machine intelligence has a version of its own of goes by that version's
+    # name, the game's own. The first text that fits is the one shown
+    authorities = {"hive": "has_authority = auth_hive_mind", "machine": "has_authority = auth_machine_intelligence"}
+    swapped = "".join(
+        f"\ttext = {{ trigger = {{ check_variable = {{ which = ap_last_item value = {item['id']} }} "
+        f"{authorities[empire]} }} localization_key = {swap['key']} }}\n"
+        for item in items for empire, swap in item.get("swaps", {}).items()
+        if empire in authorities and swap["name"] != item["name"])
     out = (f"{HEADER}\n# Scope: country\ndefined_text = {{\n\tname = GetAPItemName\n\trandom = no\n"
-           f"{texts('ap_last_item', 'ap_item', [item['id'] for item in items])}\tdefault = ap_item_unknown\n}}\n"
+           f"{swapped}{texts('ap_last_item', 'ap_item', [item['id'] for item in items])}"
+           f"\tdefault = ap_item_unknown\n}}\n"
            f"\n# Scope: country\ndefined_text = {{\n\tname = GetAPSenderName\n\trandom = no\n"
            f"{texts('ap_last_sender', 'ap_sender', range(1, MAX_SENDERS + 1))}\tdefault = ap_sender_0\n}}\n"
            # What the last death took

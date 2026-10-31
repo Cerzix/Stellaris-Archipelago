@@ -62,7 +62,7 @@ def build_items(technologies: list[dict], trees: list[dict], other: list[dict]) 
                 items.append({"id": tradition["id"], "name": tradition["name"], "kind": "tradition", "count": 1,
                               "effect": f"ap_add_tradition = {{ KEY = {tradition['key']} }}",
                               "dlc": tree["dlc"], "empires": tree["empires"], "ships": list(SHIPS),
-                              "tier": None, "weight": 1})
+                              "swaps": tradition.get("swaps", {}), "tier": None, "weight": 1})
     for item in other:
         items.append({"kind": "other", "count": 1, "dlc": [], "empires": list(EMPIRES), "ships": list(SHIPS),
                       "tier": None, "weight": 1, **item})
@@ -88,6 +88,13 @@ def build_locations(technologies: list[dict]) -> list[dict]:
 
 def all_dlcs(technologies: list[dict], trees: list[dict]) -> list[str]:
     return sorted({dlc for entry in technologies + trees for dlc in entry["dlc"]})
+
+
+def name_for(entry: dict, empire: str | None) -> str:
+    """The name of a tradition, or a tradition item, as an empire of this kind sees it in the game: many have
+    a version of their own for hive minds and machine intelligences, which the game puts in their place."""
+    swap = entry.get("swaps", {}).get(empire) if empire else None
+    return swap["name"] if swap else entry["name"]
 
 
 def usable(item: dict, dlcs, empire: str, ships: str = "normal") -> bool:

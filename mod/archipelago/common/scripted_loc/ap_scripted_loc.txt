@@ -4,6 +4,64 @@
 defined_text = {
 	name = GetAPItemName
 	random = no
+	text = { trigger = { check_variable = { which = ap_last_item value = 1107 } has_authority = auth_machine_intelligence } localization_key = tr_aptitude_specialist_training_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1120 } has_authority = auth_hive_mind } localization_key = tr_diplomacy_eminent_diplomats_gestalt }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1120 } has_authority = auth_machine_intelligence } localization_key = tr_diplomacy_eminent_diplomats_gestalt }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1121 } has_authority = auth_machine_intelligence } localization_key = tr_discovery_to_boldly_go_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1121 } has_authority = auth_hive_mind } localization_key = tr_discovery_to_boldly_go_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1123 } has_authority = auth_machine_intelligence } localization_key = tr_discovery_science_division_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1123 } has_authority = auth_hive_mind } localization_key = tr_discovery_science_division_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1124 } has_authority = auth_machine_intelligence } localization_key = tr_discovery_polytechnic_education_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1124 } has_authority = auth_hive_mind } localization_key = tr_discovery_polytechnic_education_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1125 } has_authority = auth_machine_intelligence } localization_key = tr_discovery_faith_in_science_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1125 } has_authority = auth_hive_mind } localization_key = tr_discovery_faith_in_science_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1131 } has_authority = auth_machine_intelligence } localization_key = tr_domination_colonial_viceroys_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1131 } has_authority = auth_hive_mind } localization_key = tr_domination_colonial_viceroys_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1132 } has_authority = auth_hive_mind } localization_key = tr_domination_synaptic_extensions }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1132 } has_authority = auth_machine_intelligence } localization_key = tr_domination_modular_depot }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1133 } has_authority = auth_machine_intelligence } localization_key = tr_domination_deviancy_protocols }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1133 } has_authority = auth_hive_mind } localization_key = tr_domination_divergence_supression }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1134 } has_authority = auth_machine_intelligence } localization_key = tr_domination_multi_thread }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1134 } has_authority = auth_hive_mind } localization_key = tr_domination_synaptic_network }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1135 } has_authority = auth_hive_mind } localization_key = tr_domination_drone_network }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1135 } has_authority = auth_machine_intelligence } localization_key = tr_domination_drone_network }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1141 } has_authority = auth_machine_intelligence } localization_key = tr_expansion_reach_for_the_stars_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1141 } has_authority = auth_hive_mind } localization_key = tr_expansion_reach_for_the_stars_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1142 } has_authority = auth_machine_intelligence } localization_key = tr_expansion_colonization_fever_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1142 } has_authority = auth_hive_mind } localization_key = tr_expansion_colonization_fever_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1143 } has_authority = auth_machine_intelligence } localization_key = tr_expansion_courier_network_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1143 } has_authority = auth_hive_mind } localization_key = tr_expansion_courier_network_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1144 } has_authority = auth_machine_intelligence } localization_key = tr_expansion_galactic_ambition_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1144 } has_authority = auth_hive_mind } localization_key = tr_expansion_galactic_ambition_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1145 } has_authority = auth_machine_intelligence } localization_key = tr_expansion_a_new_life_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1145 } has_authority = auth_hive_mind } localization_key = tr_expansion_a_new_life_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1166 } has_authority = auth_hive_mind } localization_key = tr_prosperity_administrative_operations_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1166 } has_authority = auth_machine_intelligence } localization_key = tr_prosperity_administrative_operations_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1167 } has_authority = auth_hive_mind } localization_key = tr_prosperity_sct_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1167 } has_authority = auth_machine_intelligence } localization_key = tr_prosperity_sct_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1168 } has_authority = auth_hive_mind } localization_key = tr_prosperity_hive_neural_signal_boosters }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1168 } has_authority = auth_machine_intelligence } localization_key = tr_prosperity_peak_performance }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1169 } has_authority = auth_machine_intelligence } localization_key = tr_prosperity_efficiency_algorithms }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1169 } has_authority = auth_hive_mind } localization_key = tr_prosperity_efficiency_instincts }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1170 } has_authority = auth_hive_mind } localization_key = tr_prosperity_extended_hives }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1170 } has_authority = auth_machine_intelligence } localization_key = tr_prosperity_optimized_nexus }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1177 } has_authority = auth_hive_mind } localization_key = tr_subterfuge_operational_security_gestalt }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1177 } has_authority = auth_machine_intelligence } localization_key = tr_subterfuge_operational_security_gestalt }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1178 } has_authority = auth_hive_mind } localization_key = tr_subterfuge_nda_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1178 } has_authority = auth_machine_intelligence } localization_key = tr_subterfuge_nda_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1181 } has_authority = auth_machine_intelligence } localization_key = tr_supremacy_master_shipwrights_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1181 } has_authority = auth_hive_mind } localization_key = tr_supremacy_master_shipwrights_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1182 } has_authority = auth_machine_intelligence } localization_key = tr_supremacy_fleet_logistical_corps_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1182 } has_authority = auth_hive_mind } localization_key = tr_supremacy_fleet_logistical_corps_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1184 } has_authority = auth_machine_intelligence } localization_key = tr_supremacy_war_games_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1184 } has_authority = auth_hive_mind } localization_key = tr_supremacy_war_games_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1186 } has_authority = auth_machine_intelligence } localization_key = tr_synchronicity_self_preservation }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1187 } has_authority = auth_hive_mind } localization_key = tr_synchronicity_kinship_wilderness }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1187 } has_authority = auth_machine_intelligence } localization_key = tr_synchronicity_kinship_wilderness }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1188 } has_authority = auth_hive_mind } localization_key = tr_synchronicity_instinctive_synchronization }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1189 } has_authority = auth_machine_intelligence } localization_key = tr_synchronicity_harmonious_directives_machine }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1195 } has_authority = auth_hive_mind } localization_key = tr_unyielding_fortress_doctrine_hive }
+	text = { trigger = { check_variable = { which = ap_last_item value = 1195 } has_authority = auth_machine_intelligence } localization_key = tr_unyielding_fortress_doctrine_machine }
 	text = { trigger = { check_variable = { which = ap_last_item value = 1 } } localization_key = ap_item_1 }
 	text = { trigger = { check_variable = { which = ap_last_item value = 2 } } localization_key = ap_item_2 }
 	text = { trigger = { check_variable = { which = ap_last_item value = 3 } } localization_key = ap_item_3 }

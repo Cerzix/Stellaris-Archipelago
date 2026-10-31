@@ -136,6 +136,27 @@ class DataTest(unittest.TestCase):
             usable = [item for item in data.items() if data.tables.usable(item, set(), empire)]
             self.assertGreater(len(usable), 400, empire)
 
+    def test_hive_minds_and_machines_have_traditions_of_their_own(self):
+        """The game puts their own version in place of many traditions, under another name."""
+        traditions = {tradition["key"]: tradition for tree in data.normal_trees() for tradition in tree["traditions"]}
+        fever = traditions["tr_expansion_colonization_fever"]
+        self.assertEqual(fever["swaps"]["machine"], {"key": "tr_expansion_colonization_fever_machine",
+                                                     "name": "Automated Colonization Units"})
+        self.assertNotIn("regular", fever["swaps"], "not the version of nomads, or of wilderness empires")
+        organs = traditions["tr_synchronicity_cloned_organs"]
+        self.assertEqual(set(organs["swaps"]), {"machine"}, "a hive mind keeps Cloned Organs")
+        items = {item["name"]: item for item in data.items()}
+        self.assertEqual(data.tables.name_for(items["Colonization Fever"], "machine"), "Automated Colonization Units")
+        self.assertEqual(data.tables.name_for(items["Colonization Fever"], "regular"), "Colonization Fever")
+        self.assertEqual(data.tables.name_for(items["Colonization Fever"], None), "Colonization Fever")
+        self.assertGreater(sum(bool(item.get("swaps")) for item in data.items()), 30)
+        # The message in game names the version the empire gets
+        text = build_mod.render_scripted_loc(data.items())
+        item = items["Colonization Fever"]["id"]
+        machine = (f"text = {{ trigger = {{ check_variable = {{ which = ap_last_item value = {item} }} "
+                   f"has_authority = auth_machine_intelligence }} localization_key = tr_expansion_colonization_fever_machine }}")
+        self.assertLess(text.index(machine), text.index(f"localization_key = ap_item_{item} }}"), "before the plain name")
+
     def test_ships(self):
         """Bio ships grow their own hulls and weapons, and build none of the normal ones."""
         technologies = {technology["key"]: technology for technology in data.technologies()}

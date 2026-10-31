@@ -335,6 +335,10 @@ class ServerSession(Session):
         else:
             for entry in received[self.announced:]:
                 name = self.items.get(entry["item"], {}).get("name", f"Item {entry['item']}")
+                # A tradition the empire has a version of its own of: that one is what arrives in the game
+                shown = data.tables.name_for(self.items.get(entry["item"], {"name": name}), self.empire())
+                if shown != name:
+                    name = f"{shown} ({name})"
                 self.log("item", [("Received ", "text"), (name, item_kind(entry.get("flags", 0))),
                                   (" from ", "text"), (self.connection.names.player(entry["player"]), "player")])
         self.announced = len(received)
@@ -416,8 +420,13 @@ class ServerSession(Session):
             self.log("error", "The multiworld was made with DLC that is not active in your game: "
                               + ", ".join(missing) + ". Items of it will do nothing.")
 
+    def empire(self) -> str | None:
+        """The kind of empire the multiworld was made for, or the game has, as far as it is known."""
+        return self.slot_data.get("empire_type") or (self.bridge.game_empire if self.bridge else None)
+
     def tracker_state(self) -> TrackerState:
         state = super().tracker_state()
+        state.empire = self.empire()
         state.holds = {location: (entry["item"], entry["player"], item_kind(entry["flags"]),
                                   self.icons.get(entry["item"]) if entry.get("game") == GAME else None)
                        for location, entry in self.scouted.items()}

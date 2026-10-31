@@ -413,6 +413,16 @@ class ServerSessionTest(unittest.TestCase):
         self.assertIn(("chat", "Steve: hi"), self.lines)
         self.assertIn(("error", "The server refused: there is no slot with that name"), self.lines)
 
+    def test_a_tradition_is_named_as_the_empire_gets_it(self):
+        self.connected(empire_type="machine")
+        fever = next(item for item in data.items() if item["name"] == "Colonization Fever")
+        self.server.on_event("items", [{"item": 1, "player": 2, "flags": 0}])
+        self.session.tick()
+        self.server.on_event("items", [{"item": 1, "player": 2, "flags": 0}, {"item": fever["id"], "player": 2, "flags": 0}])
+        self.session.tick()
+        self.assertTrue(any("Automated Colonization Units (Colonization Fever)" in text for _, text in self.lines))
+        self.assertEqual(self.session.tracker_state().empire, "machine")
+
     def test_warns_about_another_empire_and_missing_dlc(self):
         self.connected(empire_type="machine", ship_type="normal", owned_dlc=[data.dlcs()[0], data.dlcs()[1]])
         self.log("AP_HELLO")
